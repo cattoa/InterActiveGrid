@@ -129,6 +129,19 @@
             <description>No data text CSS class.</description>
         </property>
         
+        <!-- Sub entity properties -->
+        <property key="subEntityIcon" type="image" required="false" defaultValue="" isDefault="false" >
+            <caption>Show sub entity icon</caption>
+            <category>Sub entity</category>
+            <description>This is the icon to be used to trigger the showing of the sub entity</description>
+        </property>
+        </property>
+        <property key="entityAssociation" type="entity" required="true" defaultValue="" isDefault="false"  entityProperty="entity" isPath="yes" pathType="reference" >
+            <caption>Association from entity</caption>
+            <category>Sub entity</category>
+            <description>Association from from sub entity to entity</description>
+        </property>
+        
         <!-- Selection properties -->
         
         <property key="allowSelect" type="boolean" defaultValue="true">
@@ -205,6 +218,7 @@
             <category>X-axis</category>
             <description>X-axis label CSS class.</description>
         </property>
+        
 
         <!-- Y-axis properties -->
 
@@ -261,6 +275,24 @@
             <caption>Y-axis label class</caption>
             <category>Y-axis</category>
             <description>Y-axis label CSS class.</description>
+        </property>
+        <property key="yGroupAttr" type="attribute" entityProperty="entity">
+            <caption>Y-axis grouping attribute</caption>
+            <category>Y-axis</category>
+            <description>The attribute used to group row label.</description>
+            <attributeTypes>
+                <attributeType name="AutoNumber"/>
+                <attributeType name="DateTime"/>
+                <attributeType name="Enum"/>
+                <attributeType name="Integer"/>
+                <attributeType name="Long"/>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
+        <property key="yGroupClass" type="string" defaultValue="InterActiveGridYGroup">
+            <caption>Y-axis grouping class</caption>
+            <category>Y-axis</category>
+            <description>Y-axis group CSS class.</description>
         </property>
 
         <!-- Submit button properties -->
