@@ -263,7 +263,8 @@
                     yIdValue,
                     yLabelValue,
                     ySortValue,
-                    ySortValueMap = {};
+                    ySortValueMap = {},
+                    yGroupValue;
 
                 console.debug(this.domNode.id + ": Process Mendix object array");
                 this.dataMap = {};
@@ -280,6 +281,7 @@
                     yIdValue        = this.getSortKey(mendixObject, this.yIdAttr);
                     xLabelValue     = this.getDisplayValue(mendixObject, this.xLabelAttr, this.xLabelDateformat);
                     yLabelValue     = this.getDisplayValue(mendixObject, this.yLabelAttr, this.yLabelDateformat);
+                    yGroupValue     = this.getDisplayValue(mendixObject, this.yGroupAttr,"");
                     if (this.xSortAttr === "label") {
                         xSortValue  = xLabelValue;
                     } else {
@@ -295,6 +297,7 @@
                         cellMapObject = this.cellMap[cellMapKey];
                         cellMapObject.cellId = cellId;
                         cellMapObject.cellValueArray.push(cellValue);
+                        cellMapObject.yGroupValue = yGroupValue;
                         cellMapObject.displayCssValue = mendixObject.get(this.cellValueCss)
                     } else {
                         cellMapObject = {
@@ -302,6 +305,7 @@
                             xIdValue        : xIdValue,
                             yIdValue        : yIdValue,
                             cellValueArray  : [cellValue],
+                            yGroupValue      : yGroupValue,
                             displayCssValue : mendixObject.get(this.cellValueCss)
                         };
                         // Save sort key value in the map object too, used as additional styling CSS class
@@ -430,6 +434,8 @@
                     xIdValue,
                     yIdValue,
                     yLabelValue,
+                    yGroupValue,
+                    newYGroupValue;
 
                 // Create table
                 tableNode = document.createElement("table");
@@ -458,7 +464,20 @@
                 tableNode.appendChild(headerRowNode);
 
                 // Rows
+                //get First CellMap
+                yIdValue = this.yKeyArray[0].idValue;
+                xIdValue            = this.xKeyArray[colIndex].idValue;
+                cellMapKey          = xIdValue + "_" + yIdValue;
+                cellMapObject   = this.cellMap[cellMapKey];
+                newYGroupValue = cellMapObject.yGroupValue;
                 for (rowIndex = 0; rowIndex < this.yKeyArray.length; rowIndex = rowIndex + 1) {
+                    if (yGroupValue !== newYGroupValue){
+                        headerRowNode = document.createElement("tr");
+                        topLeftCellNode = document.createElement("th");
+                        headerRowNode.appendChild(this.insertBreak(newYGroupValue));
+                        tableNode.appendChild(headerRowNode);
+                        yGroupValue = newYGroupValue;
+                    }
                     rowNode = document.createElement("tr");
                     // Get the label and the ID
                     yLabelValue = this.yKeyArray[rowIndex].labelValue;
@@ -481,6 +500,7 @@
                             cellMapObject   = this.cellMap[cellMapKey];
                             cellId          = cellMapObject.cellId;
                             cellValue       = cellMapObject.cellValue;
+                            newYGroupValue  = cellMapObject.yGroupValue;
                             // Process the styling tresholds, if requested
                             // Action display, use value as CSS class?
                             if (cellMapObject.displayCssValue) {
@@ -505,6 +525,7 @@
                         }
                         rowNode.appendChild(node);
                     }
+                    
 
                     tableNode.appendChild(rowNode);
                 }
@@ -558,6 +579,36 @@
 
                 return headerNode;
 
+            },
+            
+            /** 
+             * Called when building table and the GroupValue changes
+             * 
+             * @param String newYGroupValue the value to be displayed for the group header
+             * 
+             * 
+             * returns the node
+             */        
+            insertBreak : function(newYGroupValue){
+                var
+                    divNode,
+                    groupNode,
+                    spanNode;
+            
+                // Create the span containing the group name value
+                spanNode = domMx.span(newYGroupValue);
+
+                // Create the div
+                divNode = document.createElement("div");
+                divNode.appendChild(spanNode);
+
+                // Create the th
+                groupNode = document.createElement("th");
+                groupNode.appendChild(divNode);
+                domClass.add(groupNode, this.yGroupClass);
+
+                return groupNode;
+                
             },
 
             /**

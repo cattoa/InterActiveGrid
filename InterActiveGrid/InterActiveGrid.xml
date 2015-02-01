@@ -135,7 +135,6 @@
             <category>Sub entity</category>
             <description>This is the icon to be used to trigger the showing of the sub entity</description>
         </property>
-        </property>
         <property key="entityAssociation" type="entity" required="true" defaultValue="" isDefault="false"  entityProperty="entity" isPath="yes" pathType="reference" >
             <caption>Association from entity</caption>
             <category>Sub entity</category>
