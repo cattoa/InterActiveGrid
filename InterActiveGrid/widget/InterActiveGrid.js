@@ -466,9 +466,9 @@
                 // Rows
                 //get First CellMap
                 yIdValue = this.yKeyArray[0].idValue;
-                xIdValue            = this.xKeyArray[colIndex].idValue;
-                cellMapKey          = xIdValue + "_" + yIdValue;
-                cellMapObject   = this.cellMap[cellMapKey];
+                xIdValue = this.xKeyArray[0].idValue;
+                cellMapKey = xIdValue + "_" + yIdValue;
+                cellMapObject = this.cellMap[cellMapKey];
                 newYGroupValue = cellMapObject.yGroupValue;
                 for (rowIndex = 0; rowIndex < this.yKeyArray.length; rowIndex = rowIndex + 1) {
                     if (yGroupValue !== newYGroupValue){
