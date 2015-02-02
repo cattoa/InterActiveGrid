@@ -84,11 +84,6 @@
                 <attributeType name="String"/>
             </attributeTypes>
         </property>
-        <property key="gridClass" type="string" defaultValue="interactive-class">
-            <caption>Grid  class</caption>
-            <category>Configuration</category>
-            <description>CSS class for the entire grid.</description>
-        </property>
         <property key="cellValueCss" type="attribute" entityProperty="entity" required="true">
             <caption>Cell value CSS</caption>
             <category>Configuration</category>
@@ -128,6 +123,11 @@
             <category>Configuration</category>
             <description>No data text CSS class.</description>
         </property>
+        <property key="gridClass" type="string" defaultValue="gridClass">
+            <caption>Grid cell class</caption>
+            <category>Configuration</category>
+            <description>Default grid cell CSS class.</description>
+        </property>
         
         <!-- Sub entity properties -->
 
@@ -144,7 +144,7 @@
             <category>Selection</category>
             <description>Grid selection CSS class.</description>
         </property>
-        <property key="cellSelectAttr" type="attribute" entityProperty="entity" required="true">
+        <property key="cellSelectAttr" type="attribute" entityProperty="entity" required="false">
             <caption>Cell selection attribute</caption>
             <category>Selection</category>
             <description>The attribute used to indicate that the cell has been selected.</description>
@@ -266,7 +266,7 @@
             <category>Y-axis</category>
             <description>Y-axis label CSS class.</description>
         </property>
-        <property key="yGroupAttr" type="attribute" entityProperty="entity">
+        <property key="yGroupAttr" type="attribute" entityProperty="entity" required="false">
             <caption>Y-axis grouping attribute</caption>
             <category>Y-axis</category>
             <description>The attribute used to group row label.</description>
@@ -289,6 +289,7 @@
             <category>Y-axis</category>
             <description>Allow grouping on the Y-axis.</description>
         </property>
+        
         <!-- Submit button properties -->
 
         <property key="positionTopSubmitButton" type="boolean" defaultValue="true">
@@ -301,7 +302,7 @@
             <category>Submit button</category>
             <description>Show submit button on the bottom of the grid.</description>
         </property>
-        <property key="submitButtonCaption" type="string" required="false" default="Submit">
+        <property key="submitButtonCaption" type="string" required="false">
             <caption>Submit button caption</caption>
             <category>Submit button</category>
             <description>Submit button caption</description>

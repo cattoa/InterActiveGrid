@@ -104,9 +104,6 @@
                 var
                     errorMessageArray = [];
                     
-
-
-                // When onCellClick microflow is specified, the other onCellClick properties must be specified too
                 if (this.positionTopSubmitButton || positionBottomSubmitButton) {
                     if (this.submitButtonCaption === "") {
                         errorMessageArray.push("When submit button is specified, a caption must be specified for the button");
@@ -115,7 +112,20 @@
                         errorMessageArray.push("When submit button is specified a microflow to be executed must be specified too");
                     }
                 }
+                
+                if (this.allowYGroup){
+                    
+                    if (this.yGroupAttr === null) {
+                        errorMessageArray.push("When allow y grouping is specified an attribute but be selected that will be used to group on");
+                    }
+                }
 
+                if (this.allowSelect){
+                    
+                    if (this.cellSelectAttr === null) {
+                        errorMessageArray.push("When allow select is specified an attribute but be selected that will be set by the selection process");
+                    }
+                }
 
                 if (errorMessageArray.length > 0) {
                     this.showConfigurationErrors(errorMessageArray);
@@ -328,7 +338,7 @@
                         cellMapObject.cellId = cellId;
                         cellMapObject.cellValueArray.push(cellValue);
                         cellMapObject.yGroupValue = yGroupValue;
-                        cellMapObject.displayCssValue = mendixObject.get(this.cellValueCss)
+                        cellMapObject.displayCssValue = mendixObject.get(this.cellValueCss) + " " + this.gridClass;
                     } else {
                         cellMapObject = {
                             cellId          : cellId,
@@ -336,7 +346,7 @@
                             yIdValue        : yIdValue,
                             cellValueArray  : [cellValue],
                             yGroupValue      : yGroupValue,
-                            displayCssValue : mendixObject.get(this.cellValueCss)
+                            displayCssValue : mendixObject.get(this.cellValueCss) + " " + this.gridClass
                         };
                         // Save sort key value in the map object too, used as additional styling CSS class
                         // Only for the first object; CSS class is not applied when multiple objects exist for one cell.
@@ -470,7 +480,6 @@
 
                 // Create table
                 tableNode = document.createElement("table");
-                domClass.add(tableNode, this.gridClass);
 
                 // Header row
                 headerRowNode = document.createElement("tr");
@@ -497,10 +506,9 @@
                 // Rows
                 //get First CellMap
                 
-                
-                xColCount = this.xKeyArray.length + 1;
                 for (rowIndex = 0; rowIndex < this.yKeyArray.length; rowIndex = rowIndex + 1) {
                     if (this.allowYGroup){
+                        xColCount = this.xKeyArray.length + 1;
                         yIdValue = this.yKeyArray[rowIndex].idValue;
                         xIdValue = this.xKeyArray[0].idValue;
                         cellMapKey = xIdValue + "_" + yIdValue;
@@ -521,6 +529,8 @@
                     
                     // The row label
                     node = domMx.th(yLabelValue);
+                    domClass.add(node, this.yLabelClass);
+                    
                     rowNode.appendChild(node);
 
                     // Columns
@@ -541,7 +551,7 @@
                             // Process the styling tresholds, if requested
                             // Action display, use value as CSS class?
                             if (cellMapObject.displayCssValue) {
-                                displayValueCellClass =cellMapObject.displayCssValue.replace(/[^A-Za-z0-9]/g, '_');
+                                displayValueCellClass =cellMapObject.displayCssValue; //.replace(/[^A-Za-z0-9]/g, '_');
                             }
                             nodeValue      = cellValue;
                         } else {
