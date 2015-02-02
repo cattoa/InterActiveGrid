@@ -76,16 +76,18 @@
                 if (context) {
                     this.widgetContext = context;
                     this.contextGUID = context.getTrackID();
-                    this.entityMetaData = mx.meta.getEntity(this.entity);
-                    console.debug(this.domNode.id + ": applyContext, context object GUID: " + this.contextGUID);
-                    if (this.callGetDataMicroflow === "crtOnly" || this.callGetDataMicroflow === "crtAndChg") {
-                            thisObj.getData();
-                    }
-                    if (this.callGetDataMicroflow === "crtAndChg" || this.callGetDataMicroflow === "chgOnly") {
-                        this.handle = mx.data.subscribe({
-                            guid: this.contextGUID,
-                            callback: lang.hitch(this, this.contextObjectChangedCallback)
-                        });
+                    if (this.checkProperties()) {
+                        this.entityMetaData = mx.meta.getEntity(this.entity);
+                        console.debug(this.domNode.id + ": applyContext, context object GUID: " + this.contextGUID);
+                        if (this.callGetDataMicroflow === "crtOnly" || this.callGetDataMicroflow === "crtAndChg") {
+                                thisObj.getData();
+                        }
+                        if (this.callGetDataMicroflow === "crtAndChg" || this.callGetDataMicroflow === "chgOnly") {
+                            this.handle = mx.data.subscribe({
+                                guid: this.contextGUID,
+                                callback: lang.hitch(this, this.contextObjectChangedCallback)
+                            });
+                        }
                     }
                 } else {
                     alert(this.id + ".applyContext received empty context");
@@ -94,6 +96,34 @@
                     callback();
                 }
             },
+
+            checkProperties: function () {
+
+                // console.log(this.domNode.id + ": checkProperties");
+
+                var
+                    errorMessageArray = [];
+                    
+
+
+                // When onCellClick microflow is specified, the other onCellClick properties must be specified too
+                if (this.positionTopSubmitButton || positionBottomSubmitButton) {
+                    if (this.submitButtonCaption === "") {
+                        errorMessageArray.push("When submit button is specified, a caption must be specified for the button");
+                    }
+                    if (this.submitButtonMicroflow === null) {
+                        errorMessageArray.push("When submit button is specified a microflow to be executed must be specified too");
+                    }
+                }
+
+
+                if (errorMessageArray.length > 0) {
+                    this.showConfigurationErrors(errorMessageArray);
+                }
+
+                return (errorMessageArray.length === 0);
+            },
+
 
             contextObjectChangedCallback: function () {
 
@@ -433,6 +463,7 @@
                     tresholdClass,
                     xIdValue,
                     yIdValue,
+                    xColCount,
                     yLabelValue,
                     yGroupValue,
                     newYGroupValue;
@@ -465,18 +496,23 @@
 
                 // Rows
                 //get First CellMap
-                yIdValue = this.yKeyArray[0].idValue;
-                xIdValue = this.xKeyArray[0].idValue;
-                cellMapKey = xIdValue + "_" + yIdValue;
-                cellMapObject = this.cellMap[cellMapKey];
-                newYGroupValue = cellMapObject.yGroupValue;
+                
+                
+                xColCount = this.xKeyArray.length + 1;
                 for (rowIndex = 0; rowIndex < this.yKeyArray.length; rowIndex = rowIndex + 1) {
-                    if (yGroupValue !== newYGroupValue){
-                        headerRowNode = document.createElement("tr");
-                        topLeftCellNode = document.createElement("th");
-                        headerRowNode.appendChild(this.insertBreak(newYGroupValue));
-                        tableNode.appendChild(headerRowNode);
-                        yGroupValue = newYGroupValue;
+                    if (this.allowYGroup){
+                        yIdValue = this.yKeyArray[rowIndex].idValue;
+                        xIdValue = this.xKeyArray[0].idValue;
+                        cellMapKey = xIdValue + "_" + yIdValue;
+                        cellMapObject = this.cellMap[cellMapKey];
+                        newYGroupValue = cellMapObject.yGroupValue;
+                        if (yGroupValue !== newYGroupValue){
+                            headerRowNode = document.createElement("tr");
+                            topLeftCellNode = document.createElement("th");
+                            headerRowNode.appendChild(this.insertBreak(newYGroupValue,xColCount));
+                            tableNode.appendChild(headerRowNode);
+                            yGroupValue = newYGroupValue;
+                        }
                     }
                     rowNode = document.createElement("tr");
                     // Get the label and the ID
@@ -496,6 +532,7 @@
                         // It is possible that no values exists for a given combination of the two IDs
                         tresholdClass = null;
                         displayValueCellClass = null;
+                        
                         if (this.cellMap[cellMapKey]) {
                             cellMapObject   = this.cellMap[cellMapKey];
                             cellId          = cellMapObject.cellId;
@@ -589,7 +626,7 @@
              * 
              * returns the node
              */        
-            insertBreak : function(newYGroupValue){
+            insertBreak : function(newYGroupValue,xColCount){
                 var
                     divNode,
                     groupNode,
@@ -606,6 +643,7 @@
                 groupNode = document.createElement("th");
                 groupNode.appendChild(divNode);
                 domClass.add(groupNode, this.yGroupClass);
+                groupNode.setAttribute("colspan",xColCount);
 
                 return groupNode;
                 

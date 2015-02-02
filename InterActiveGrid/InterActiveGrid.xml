@@ -284,7 +284,11 @@
             <category>Y-axis</category>
             <description>Y-axis group CSS class.</description>
         </property>
-
+        <property key="allowYGroup" type="boolean" defaultValue="true">
+            <caption>Allow grouping</caption>
+            <category>Y-axis</category>
+            <description>Allow grouping on the Y-axis.</description>
+        </property>
         <!-- Submit button properties -->
 
         <property key="positionTopSubmitButton" type="boolean" defaultValue="true">
@@ -297,7 +301,7 @@
             <category>Submit button</category>
             <description>Show submit button on the bottom of the grid.</description>
         </property>
-        <property key="submitButtonCaption" type="string" required="false">
+        <property key="submitButtonCaption" type="string" required="false" default="Submit">
             <caption>Submit button caption</caption>
             <category>Submit button</category>
             <description>Submit button caption</description>
@@ -307,7 +311,7 @@
             <category>Submit button</category>
             <description>Submit button CSS class. This is an additional class applied to the export button.</description>
         </property>
-        <property key="submitButtonMicroflow" type="microflow">
+        <property key="submitButtonMicroflow" type="microflow" required="false">
             <caption>Submit button microflow</caption>
             <category>Submit button</category>
             <description>The microflow that executes when the submit button is clicked.</description>
