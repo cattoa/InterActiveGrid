@@ -19,9 +19,9 @@
     require([
 
         'dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_Widget',
-        'mxui/dom', 'dojo/dom-class', 'dojo/dom-construct', 'dojo/_base/lang', 'dojo/number', 'dojo/_base/array', 'dojo/date/locale'
+        'mxui/dom', 'dojo/dom-class', 'dojo/dom-construct', 'dojo/_base/lang', 'dojo/number',  'dojo/date/locale','dojo/query'
 
-    ], function (declare, _WidgetBase, _Widget, domMx, domClass, domConstruct, lang, dojoNumber, dojoArray, dojoDateLocale) {
+    ], function (declare, _WidgetBase, _Widget, domMx, domClass, domConstruct, lang, dojoNumber, dojoDateLocale, dojoQuery) {
 
         // Declare widget.
         return declare('InterActiveGrid.widget.InterActiveGrid', [ _WidgetBase, _Widget ], {
@@ -670,40 +670,75 @@
                     objGuid,
                     objClass,
                     mendixObject;
-                    
-               objGuid = evt.target.getAttribute("cellid");     
-               if (objGuid){     
+                
+                objGuid = evt.target.getAttribute("cellid");     
+                if (objGuid){     
                     mendixObject = this.dataMap[objGuid];
                     if (mendixObject){
                         objClass = evt.target.getAttribute("class"); 
                         if (objClass.indexOf(this.selectionClass) !== -1){
                             evt.target.setAttribute("class", objClass.replace(' ' + this.selectionClass,''));
-                            
                             mendixObject.set(this.cellSelectAttr,false);
                         }
                         else {
                             evt.target.setAttribute("class", objClass + ' ' + this.selectionClass);
                             mendixObject.set(this.cellSelectAttr,true);
+                            this.deselectData(mendixObject);
                         }
                         mx.data.save({
-                            mxobj : mendixObject
+                            mxobj       : mendixObject,
+                            callback    : lang.hitch(this, this.afterSaveDeselect )
                         });
                     }
                 }
                 console.debug("onClickCell");
             },
+            
+            
+        afterSave : function (){
+            console.debug("afterSave");
+        },
 
             /**
              * Called when the user requests an export of the data
              *
              * @param evt  The click event
              */
-            selectData : function (evt) {
-                console.debug("selectData");
-                // console.dir(evt);
+            deselectData : function (mendixObjectIn) {
+                var
+                    xIdValue,
+                    mendixObjectIndex,
+                    mendixObject,
+                    guid,
+                    nodes,
+                    objClass;
+                    
+                
+                xIdValue = mendixObjectIn.get(this.xIdAttr);
+                for (mendixObjectIndex = 0; mendixObjectIndex < this.mendixObjectArray.length; mendixObjectIndex = mendixObjectIndex + 1) {
+                    mendixObject    = this.mendixObjectArray[mendixObjectIndex];
+                    if (mendixObject.get(this.xIdAttr) === xIdValue){
+                        if (mendixObject !== mendixObjectIn){
+                            if (mendixObject.get(this.cellSelectAttr)){
+                                mendixObject.set(this.cellSelectAttr,false);
+                                guid = mendixObject.getGUID();
+                                nodes = dojoQuery("." + this.selectionClass);
+                                for(var x = 0; x < nodes.length; x++){
+                                    if(nodes[x].getAttribute("cellId") === guid){
+                                      objClass = nodes[x].getAttribute("class");
+                                      objClass = objClass.replace(' ' + this.selectionClass,'')
+                                      nodes[x].setAttribute("class",objClass );
+                                    }
+                                }
+                           }
+                        }
+                        
+                    }
+                }
+                
             },
 
- 
+             
             /**
              * Get the attribute value for use as sort key
              *
