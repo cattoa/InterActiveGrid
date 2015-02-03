@@ -104,7 +104,7 @@
                 var
                     errorMessageArray = [];
                     
-                if (this.positionTopSubmitButton || positionBottomSubmitButton) {
+                if (this.positionTopSubmitButton || this.positionBottomSubmitButton) {
                     if (this.submitButtonCaption === "") {
                         errorMessageArray.push("When submit button is specified, a caption must be specified for the button");
                     }
@@ -485,7 +485,7 @@
                 headerRowNode = document.createElement("tr");
                 topLeftCellNode = document.createElement("th");
                 
-                 
+
                 if (this.positionTopSubmitButton){
                     submitButton = document.createElement('button');
                     submitButton.setAttribute('type', 'button');
@@ -582,7 +582,8 @@
                 
                 if (this.positionBottomSubmitButton){
                     footerRowNode = document.createElement("tr");
-                    bottomLeftCellNode = document.createElement("th");    submitButton = document.createElement('button');
+                    bottomLeftCellNode = document.createElement("th");    
+                    submitButton = document.createElement('button');
                     submitButton.setAttribute('type', 'button');
                     domClass.add(submitButton, 'btn mx-button btn-default ' + this.submitButtonClass);
                     if (this.submitButtonCaption) {
@@ -665,7 +666,7 @@
              * @param evt  The click event
              */
             onClickCell : function (evt) {
-                debugger;
+
                 var
                     objGuid,
                     objClass,
