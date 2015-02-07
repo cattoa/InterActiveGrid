@@ -92,6 +92,14 @@
                 <attributeType name="Enum"/>
             </attributeTypes>
         </property>
+        <property key="tooltipValue" type="attribute" entityProperty="entity" required="true">
+            <caption>Cell tooltip value</caption>
+            <category>Configuration</category>
+            <description>The attribute used as the cell tooltip.</description>
+            <attributeTypes>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
         <property key="getDataMicroflow" type="microflow">
             <caption>Get data microflow</caption>
             <category>Configuration</category>

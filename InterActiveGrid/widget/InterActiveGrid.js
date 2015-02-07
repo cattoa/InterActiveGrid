@@ -19,9 +19,9 @@
     require([
 
         'dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_Widget',
-        'mxui/dom', 'dojo/dom-class', 'dojo/dom-construct', 'dojo/_base/lang', 'dojo/number',  'dojo/date/locale','dojo/query'
+        'mxui/dom', 'dojo/dom-class', 'dojo/dom-construct', 'dojo/_base/lang', 'dojo/number',  'dojo/date/locale','dojo/query', 'dijit/Tooltip', 'dojo/ready'
 
-    ], function (declare, _WidgetBase, _Widget, domMx, domClass, domConstruct, lang, dojoNumber, dojoDateLocale, dojoQuery) {
+    ], function (declare, _WidgetBase, _Widget, domMx, domClass, domConstruct, lang, dojoNumber, dojoDateLocale, dojoQuery, _Tooltip, ready ) {
 
         // Declare widget.
         return declare('InterActiveGrid.widget.InterActiveGrid', [ _WidgetBase, _Widget ], {
@@ -339,14 +339,18 @@
                         cellMapObject.cellValueArray.push(cellValue);
                         cellMapObject.yGroupValue = yGroupValue;
                         cellMapObject.displayCssValue = mendixObject.get(this.cellValueCss) + " " + this.gridClass;
+                        cellMapObject.tooltipValue = mendixObject.get(this.tooltipValue);
+                        
                     } else {
                         cellMapObject = {
                             cellId          : cellId,
                             xIdValue        : xIdValue,
                             yIdValue        : yIdValue,
                             cellValueArray  : [cellValue],
-                            yGroupValue      : yGroupValue,
-                            displayCssValue : mendixObject.get(this.cellValueCss) + " " + this.gridClass
+                            yGroupValue     : yGroupValue,
+                            displayCssValue : mendixObject.get(this.cellValueCss) + " " + this.gridClass,
+                            tooltipValue    : mendixObject.get(this.tooltipValue)
+                            
                         };
                         // Save sort key value in the map object too, used as additional styling CSS class
                         // Only for the first object; CSS class is not applied when multiple objects exist for one cell.
@@ -365,7 +369,7 @@
                         ySortValueMap[ySortValue] = { idValue : yIdValue, labelValue : yLabelValue};
                     }
                 }
-
+                
                 console.debug(this.domNode.id + ": Perform requested action on the data");
 
                 for (cellMapKey in this.cellMap) {
@@ -531,6 +535,7 @@
                     node = domMx.th(yLabelValue);
                     domClass.add(node, this.yLabelClass);
                     
+                    
                     rowNode.appendChild(node);
 
                     // Columns
@@ -561,10 +566,19 @@
                         node.innerHTML      = nodeValue;
                         //node.setAttribute(this.xIdAttr, xIdValue);
                         //node.setAttribute(this.yIdAttr, yIdValue);
-                        node.setAttribute("cellId",cellId);
+                        node.setAttribute("id",cellId);
                         if (this.allowSelect){
                             node.onclick = lang.hitch(this, this.onClickCell);
                         }
+                        if (cellMapObject){
+                            console.debug("id:" + cellId + " - add tooltip");
+                            new _Tooltip({
+                                connectId   : [cellId],
+                                label       : cellMapObject.tootipValue,
+                                showDelay   : 500
+                            }); 
+                        }
+                        
                         // Additional class based on the treshold?
                         // Additional class for display?
                         if (displayValueCellClass) {
@@ -672,7 +686,7 @@
                     objClass,
                     mendixObject;
                 
-                objGuid = evt.target.getAttribute("cellid");     
+                objGuid = evt.target.getAttribute("id");     
                 if (objGuid){     
                     mendixObject = this.dataMap[objGuid];
                     if (mendixObject){
@@ -725,7 +739,7 @@
                                 guid = mendixObject.getGUID();
                                 nodes = dojoQuery("." + this.selectionClass);
                                 for(var x = 0; x < nodes.length; x++){
-                                    if(nodes[x].getAttribute("cellId") === guid){
+                                    if(nodes[x].getAttribute("id") === guid){
                                       objClass = nodes[x].getAttribute("class");
                                       objClass = objClass.replace(' ' + this.selectionClass,'')
                                       nodes[x].setAttribute("class",objClass );
