@@ -354,13 +354,15 @@
                         ySortValue  = yIdValue;
                     }
                     cellMapKey      = xIdValue + "_" + yIdValue;
+                    
+                    
                     if (this.cellMap[cellMapKey]) {
                         cellMapObject = this.cellMap[cellMapKey];
                         cellMapObject.cellId = cellId;
                         cellMapObject.cellValueArray.push(cellValue);
                         cellMapObject.yGroupValue = yGroupValue;
                         cellMapObject.displayCssValue = mendixObject.get(this.cellValueCss) + " " + this.gridClass;
-                        cellMapObject.tooltipValue = "Tooltip";//mendixObject.get(this.tooltipValue);
+                        cellMapObject.tooltipValue = mendixObject.get(this.tooltipValue);
                         
                     } else {
                         cellMapObject = {
@@ -370,7 +372,7 @@
                             cellValueArray  : [cellValue],
                             yGroupValue     : yGroupValue,
                             displayCssValue : mendixObject.get(this.cellValueCss) + " " + this.gridClass,
-                            tooltipValue    : "Tooltip" //mendixObject.get(this.tooltipValue)
+                            tooltipValue    : mendixObject.get(this.tooltipValue)
                             
                         };
                         // Save sort key value in the map object too, used as additional styling CSS class
