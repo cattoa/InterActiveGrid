@@ -18,10 +18,10 @@
 
     require([
 
-        'dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_Widget',
-        'mxui/dom', 'dojo/dom-class', 'dojo/dom-construct', 'dojo/_base/lang', 'dojo/number',  'dojo/date/locale','dojo/query', 'dijit/Tooltip', 'dojo/ready'
+        'dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_Widget', 'dijit/Tooltip',
+        'mxui/dom', 'dojo/dom-class', 'dojo/dom-construct', 'dojo/_base/lang', 'dojo/number',  'dojo/date/locale','dojo/query'
 
-    ], function (declare, _WidgetBase, _Widget, domMx, domClass, domConstruct, lang, dojoNumber, dojoDateLocale, dojoQuery, _Tooltip, ready ) {
+    ], function (declare, _WidgetBase, _Widget,_Tooltip, domMx, domClass, domConstruct, lang, dojoNumber, dojoDateLocale, dojoQuery ) {
 
         // Declare widget.
         return declare('InterActiveGrid.widget.InterActiveGrid', [ _WidgetBase, _Widget ], {
@@ -37,12 +37,6 @@
             yKeyArray                       : [],
             entityMetaData                  : null,
             progressDialogId                : null,
-            cellValueAttrType               : null,
-            onClickXIdValue                 : null,
-            onClickYIdValue                 : null,
-            onClickMendixObject             : null,
-            onCellClickReferenceName        : null,
-            exportMendixObject              : null,
 
             /**
              * Called by the Mendix runtime after creation.
@@ -50,10 +44,36 @@
             postCreate: function () {
                 
                 domClass.add(this.domNode, "InterActiveGrid");
+                
                 // Load CSS ... automatically from ui directory
+            },
+            
+            createTooltips: function(){
+                var
+                    cellMapObject,
+                    cellMapKey,
+                    rowIndex,
+                    colIndex,
+                    yIdValue,
+                    xIdValue;
+                    
+                console.debug("Starting createTooltips");
 
-                if (this.onCellClickReference) {
-                    this.onCellClickReferenceName = this.onCellClickReference.substr(0, this.onCellClickReference.indexOf('/'));
+                for (rowIndex = 0; rowIndex < this.yKeyArray.length; rowIndex ++) {
+                    for (colIndex = 0; colIndex < this.xKeyArray.length; colIndex ++) {
+                        yIdValue = this.yKeyArray[rowIndex].idValue;
+                        xIdValue = this.xKeyArray[colIndex].idValue;
+                        cellMapKey = xIdValue + "_" + yIdValue;
+                        cellMapObject = this.cellMap[cellMapKey];
+                        if (cellMapObject){
+                            console.debug("id:" + cellMapObject.cellId + " - add tooltip");
+                            new _Tooltip({
+                                connectId   : cellMapObject.cellId,
+                                label       : cellMapObject.tooltipValue,
+                                showDelay   : 500
+                            }); 
+                        }
+                    }
                 }
             },
 
@@ -196,6 +216,7 @@
                     if (this.mendixObjectArray.length > 0) {
                         this.buildTableData();
                         this.createTable();
+                        this.createTooltips();
                     } else {
                         noDataNode = domMx.p(this.noDataText);
                         domClass.add(noDataNode, this.noDataTextClass);
@@ -339,7 +360,7 @@
                         cellMapObject.cellValueArray.push(cellValue);
                         cellMapObject.yGroupValue = yGroupValue;
                         cellMapObject.displayCssValue = mendixObject.get(this.cellValueCss) + " " + this.gridClass;
-                        cellMapObject.tooltipValue = mendixObject.get(this.tooltipValue);
+                        cellMapObject.tooltipValue = "Tooltip";//mendixObject.get(this.tooltipValue);
                         
                     } else {
                         cellMapObject = {
@@ -349,7 +370,7 @@
                             cellValueArray  : [cellValue],
                             yGroupValue     : yGroupValue,
                             displayCssValue : mendixObject.get(this.cellValueCss) + " " + this.gridClass,
-                            tooltipValue    : mendixObject.get(this.tooltipValue)
+                            tooltipValue    : "Tooltip" //mendixObject.get(this.tooltipValue)
                             
                         };
                         // Save sort key value in the map object too, used as additional styling CSS class
@@ -562,22 +583,20 @@
                         } else {
                             nodeValue       = "?";
                         }
-                        node                = document.createElement("td");
-                        node.innerHTML      = nodeValue;
+                        node  = dojo.create("td",
+                            {
+                                innerHTML   : nodeValue,
+                                id          : cellId
+                            }
+                        );
+                                    
                         //node.setAttribute(this.xIdAttr, xIdValue);
                         //node.setAttribute(this.yIdAttr, yIdValue);
-                        node.setAttribute("id",cellId);
+                        
                         if (this.allowSelect){
                             node.onclick = lang.hitch(this, this.onClickCell);
                         }
-                        if (cellMapObject){
-                            console.debug("id:" + cellId + " - add tooltip");
-                            new _Tooltip({
-                                connectId   : [cellId],
-                                label       : cellMapObject.tootipValue,
-                                showDelay   : 500
-                            }); 
-                        }
+                        
                         
                         // Additional class based on the treshold?
                         // Additional class for display?
@@ -642,15 +661,8 @@
                 return headerNode;
 
             },
-            
-            /** 
-             * Called when building table and the GroupValue changes
-             * 
-             * @param String newYGroupValue the value to be displayed for the group header
-             * 
-             * 
-             * returns the node
-             */        
+
+        
             insertBreak : function(newYGroupValue,xColCount){
                 var
                     divNode,
