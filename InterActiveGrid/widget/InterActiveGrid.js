@@ -57,7 +57,7 @@
                     yIdValue,
                     xIdValue;
                     
-                console.debug("Starting createTooltips");
+                // console.debug("Starting createTooltips");
 
                 for (rowIndex = 0; rowIndex < this.yKeyArray.length; rowIndex ++) {
                     for (colIndex = 0; colIndex < this.xKeyArray.length; colIndex ++) {
@@ -66,11 +66,11 @@
                         cellMapKey = xIdValue + "_" + yIdValue;
                         cellMapObject = this.cellMap[cellMapKey];
                         if (cellMapObject){
-                            console.debug("id:" + cellMapObject.cellId + " - add tooltip");
+                            // console.debug("id:" + cellMapObject.cellId + " - add tooltip");
                             new _Tooltip({
                                 connectId   : cellMapObject.cellId,
                                 label       : cellMapObject.tooltipValue,
-                                showDelay   : 500
+                                showDelay   : this.tooltipDelay
                             }); 
                         }
                     }
@@ -87,7 +87,7 @@
                 var
                     thisObj = this;
 
-                console.debug(this.domNode.id + ": applyContext");
+                // console.debug(this.domNode.id + ": applyContext");
 
                 if (this.handle) {
                     mx.data.unsubscribe(this.handle);
@@ -98,7 +98,7 @@
                     this.contextGUID = context.getTrackID();
                     if (this.checkProperties()) {
                         this.entityMetaData = mx.meta.getEntity(this.entity);
-                        console.debug(this.domNode.id + ": applyContext, context object GUID: " + this.contextGUID);
+                        // console.debug(this.domNode.id + ": applyContext, context object GUID: " + this.contextGUID);
                         if (this.callGetDataMicroflow === "crtOnly" || this.callGetDataMicroflow === "crtAndChg") {
                                 thisObj.getData();
                         }
@@ -157,7 +157,7 @@
 
             contextObjectChangedCallback: function () {
 
-                console.debug(this.domNode.id + ": Context object has changed");
+                // console.debug(this.domNode.id + ": Context object has changed");
                 this.getData();
             },
 
@@ -166,7 +166,7 @@
              */
             getData: function () {
 
-                console.debug(this.domNode.id + ": Call microflow to get the data");
+                // console.debug(this.domNode.id + ": Call microflow to get the data");
 
                 if (this.getDataMicroflowCallPending) {
                     // Prevent problems when Mendix runtime calls applyContext multiple times
@@ -198,7 +198,7 @@
                 var
                     noDataNode;
 
-                console.debug(this.domNode.id + ": dataMicroflowCallback");
+                // console.debug(this.domNode.id + ": dataMicroflowCallback");
 
                 this.getDataMicroflowCallPending = false;
                 this.hideProgress();
@@ -247,11 +247,11 @@
              */
             checkData: function () {
 
-                console.debug(this.domNode.id + ": checkData " + Object.prototype.toString.call(this.mendixObjectArray));
+                // console.debug(this.domNode.id + ": checkData " + Object.prototype.toString.call(this.mendixObjectArray));
                 
                 // If empty array is return from Mendix then do nothing 
                 if (Object.prototype.toString.call(this.mendixObjectArray) === "[object String]"){
-                    console.debug(this.domNode.id + ": checkData empty array do nothing");
+                    // console.debug(this.domNode.id + ": checkData empty array do nothing");
                     return false;
                 }
                 var
@@ -307,7 +307,7 @@
              */
             buildTableData: function () {
 
-                console.debug(this.domNode.id + ": buildTableData");
+                // console.debug(this.domNode.id + ": buildTableData");
 
                 var
                     mendixObject,
@@ -327,16 +327,16 @@
                     ySortValueMap = {},
                     yGroupValue;
 
-                console.debug(this.domNode.id + ": Process Mendix object array");
+                // console.debug(this.domNode.id + ": Process Mendix object array");
                 this.dataMap = {};
                 for (mendixObjectIndex = 0; mendixObjectIndex < this.mendixObjectArray.length; mendixObjectIndex = mendixObjectIndex + 1) {
                     mendixObject    = this.mendixObjectArray[mendixObjectIndex];
                     // For display, convert to display value as no aggregation will take place.
                     cellValue   = mendixObject.get(this.cellValueAttr);
-                    //console.debug(this.domNode.id + ": Process Mendix value : " + cellValue);
+                    // console.debug(this.domNode.id + ": Process Mendix value : " + cellValue);
                     cellId = mendixObject.getGUID();
                     this.dataMap[cellId] = mendixObject;
-                    //console.debug(this.domNode.id + ": Process Mendix id : " + cellId);
+                   // console.debug(this.domNode.id + ": Process Mendix id : " + cellId);
                     
                     xIdValue        = this.getSortKey(mendixObject, this.xIdAttr);
                     yIdValue        = this.getSortKey(mendixObject, this.yIdAttr);
@@ -363,7 +363,6 @@
                         cellMapObject.yGroupValue = yGroupValue;
                         cellMapObject.displayCssValue = mendixObject.get(this.cellValueCss) + " " + this.gridClass;
                         cellMapObject.tooltipValue = mendixObject.get(this.tooltipValue);
-                        
                     } else {
                         cellMapObject = {
                             cellId          : cellId,
@@ -375,6 +374,9 @@
                             tooltipValue    : mendixObject.get(this.tooltipValue)
                             
                         };
+                        if (mendixObject.get(this.cellSelectAttr)){
+                            cellMapObject.displayCssValue += ' ' + this.selectionClass;
+                        }
                         // Save sort key value in the map object too, used as additional styling CSS class
                         // Only for the first object; CSS class is not applied when multiple objects exist for one cell.
                         this.cellMap[cellMapKey] = cellMapObject;
@@ -393,7 +395,7 @@
                     }
                 }
                 
-                console.debug(this.domNode.id + ": Perform requested action on the data");
+                // console.debug(this.domNode.id + ": Perform requested action on the data");
 
                 for (cellMapKey in this.cellMap) {
                     if (this.cellMap.hasOwnProperty(cellMapKey)) {
@@ -402,14 +404,14 @@
                     }
                 }
 
-                console.debug(this.domNode.id + ": Sort the X and Y axis data");
+                // console.debug(this.domNode.id + ": Sort the X and Y axis data");
 
                 if (this.xSortAttr === "label") {
                     sortAttr = this.xLabelAttr;
                 } else {
                     sortAttr = this.xIdAttr;
                 }
-                console.debug(this.domNode.id + ": Sort the XKey Attr: " + sortAttr);
+                // console.debug(this.domNode.id + ": Sort the XKey Attr: " + sortAttr);
                 this.xKeyArray = this.sortAxisData(xSortValueMap, sortAttr, this.xSortDirection);
                 
                 
@@ -418,7 +420,7 @@
                 } else {
                     sortAttr = this.yIdAttr;
                 }
-                console.debug(this.domNode.id + ": Sort the YKey Attr: " + sortAttr);
+                // console.debug(this.domNode.id + ": Sort the YKey Attr: " + sortAttr);
                 this.yKeyArray = this.sortAxisData(ySortValueMap, sortAttr, this.ySortDirection);
 
             },
@@ -443,7 +445,7 @@
                   
                 
                 attrType = this.entityMetaData.getAttributeType(sortAttr); 
-                console.debug(this.domNode.id + ": sortAxisData attr type : " + attrType);
+                // console.debug(this.domNode.id + ": sortAxisData attr type : " + attrType);
                 switch (attrType) {
                 case "AutoNumber":
                 case "Integer":
@@ -461,13 +463,13 @@
                     keyArray.reverse();
                 }
                 
-                console.debug(this.domNode.id + ": sortAxisData keyArray size : " + keyArray.length);
+                // console.debug(this.domNode.id + ": sortAxisData keyArray size : " + keyArray.length);
                 for (arrayIndex = 0; arrayIndex < keyArray.length; arrayIndex = arrayIndex + 1) {
                     sortKey = keyArray[arrayIndex];
                     sortObject = sortValueMap[sortKey];
                     axisDataArray.push(sortObject);
                     
-                console.debug("Sort Key" + sortKey);
+                // console.debug("Sort Key" + sortKey);
                 }
 
                 return axisDataArray;
@@ -478,7 +480,7 @@
              */
             createTable: function () {
 
-                console.debug(this.domNode.id + ": createTable");
+                // console.debug(this.domNode.id + ": createTable");
 
                 var
                     cellMapKey,
@@ -720,12 +722,12 @@
                         });
                     }
                 }
-                console.debug("onClickCell");
+                // console.debug("onClickCell");
             },
             
             
         afterSave : function (){
-            console.debug("afterSave");
+            // console.debug("afterSave");
         },
 
             /**
@@ -876,13 +878,13 @@
             },
             
             submitSelectionEvent : function(evt){
-                console.debug("submitSelection");
+                // console.debug("submitSelection");
                 this.submitSelection();
             },
             
             submitSelection : function () {
 
-               console.debug("submitSelection");
+               // console.debug("submitSelection");
                
                 mx.data.action({
                     params       : {
@@ -901,10 +903,9 @@
                 console.dir(err);
                 alert("Call to microflow " + this.exportDataMicroflow + " ended with an error");
 
-            },    /**
+            },
 
-
-
+            
             /**
              * Format a currency value
              *
@@ -951,7 +952,7 @@
              *
              */
             uninitialize: function () {
-                console.debug(this.domNode.id + ": uninitialize");
+                // console.debug(this.domNode.id + ": uninitialize");
                 if (this.handle) {
                     mx.data.unsubscribe(this.handle);
                 }

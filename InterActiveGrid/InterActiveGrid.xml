@@ -100,6 +100,12 @@
                 <attributeType name="String"/>
             </attributeTypes>
         </property>
+        <property key="tooltipDelay" type="integer" defaultValue="1000">
+            <caption>Delay before tooltip</caption>
+            <category>Configuration</category>
+            <description>The delay in ms before the tooltip is shown.</description>
+        </property>
+        
         <property key="getDataMicroflow" type="microflow">
             <caption>Get data microflow</caption>
             <category>Configuration</category>
